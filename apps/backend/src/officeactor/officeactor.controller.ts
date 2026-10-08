@@ -25,6 +25,11 @@ import { OfficeActorBridgeGuard } from '@gitroom/backend/officeactor/officeactor
 export class OfficeActorController {
   constructor(private _officeActorService: OfficeActorService) {}
 
+  @Get('/users/:sub')
+  getUser(@Param('sub') sub: string) {
+    return this._officeActorService.getUser(sub);
+  }
+
   @Put('/users/:sub')
   upsertUser(@Param('sub') sub: string, @Body() body: OfficeActorUserDto) {
     return this._officeActorService.upsertUser(sub, body);

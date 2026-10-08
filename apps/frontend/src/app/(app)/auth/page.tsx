@@ -6,12 +6,23 @@ import { isGeneralServerSide } from '@gitroom/helpers/utils/is.general.server.si
 import Link from 'next/link';
 import { getT } from '@gitroom/react/translation/get.translation.service.backend';
 import { LoginWithOidc } from '@gitroom/frontend/components/auth/login.with.oidc';
+import { OauthAutoLogin } from '@gitroom/frontend/components/auth/oauth.auto.login';
 export const metadata: Metadata = {
   title: `${isGeneralServerSide() ? 'Postiz' : 'Gitroom'} Register`,
   description: '',
 };
-export default async function Auth(params: {searchParams: Promise<{provider: string}>}) {
+export default async function Auth(params: {searchParams: Promise<{provider: string; code?: string; manual?: string}>}) {
   const t = await getT();
+  const searchParams = await params?.searchParams;
+  // The OAuth callback arrives here with provider and code; let it through.
+  if (
+    process.env.POSTIZ_OAUTH_AUTO_LOGIN === 'true' &&
+    !searchParams?.provider &&
+    !searchParams?.code &&
+    searchParams?.manual !== '1'
+  ) {
+    return <OauthAutoLogin />;
+  }
   if (process.env.DISABLE_REGISTRATION === 'true') {
     const canRegister = (
       await (await internalFetch('/auth/can-register')).json()

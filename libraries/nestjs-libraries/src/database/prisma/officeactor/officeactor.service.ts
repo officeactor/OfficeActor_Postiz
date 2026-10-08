@@ -111,6 +111,20 @@ export class OfficeActorService {
     return { id: user.id, created };
   }
 
+  // OfficeActor's login asks this before it signs a user in: Postiz signs
+  // users out again when they are deactivated or belong to no organization.
+  async getUser(sub: string) {
+    checkSub(sub);
+    const user = await this._officeActorRepository.getUserStatusBySub(sub);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const organizations =
+      await this._officeActorRepository.countActiveMemberships(user.id);
+    return { sub, activated: user.activated, organizations };
+  }
+
   // Ends access at once, also for sessions that are still signed in: Postiz
   // sessions do not expire, but AuthMiddleware rejects deactivated users.
   // A later PUT /users/:sub activates the account again; memberships other

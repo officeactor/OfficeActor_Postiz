@@ -8,7 +8,7 @@ import { setCookie } from '@gitroom/frontend/components/layout/layout.context';
 import { useT } from '@gitroom/react/translation/get.transation.service.client';
 export const LogoutComponent: FC<{ isIcon?: boolean }> = ({ isIcon }) => {
   const fetch = useFetch();
-  const { isGeneral, isSecured } = useVariables();
+  const { isGeneral, isSecured, logoutUrl } = useVariables();
   const t = useT();
 
   const logout = useCallback(async () => {
@@ -28,9 +28,11 @@ export const LogoutComponent: FC<{ isIcon?: boolean }> = ({ isIcon }) => {
           method: 'POST',
         });
       }
-      window.location.href = '/';
+      // POSTIZ_LOGOUT_URL ends the identity provider's session as well, so
+      // automatic sign-in does not log the user straight back in.
+      window.location.href = logoutUrl || '/';
     }
-  }, []);
+  }, [logoutUrl]);
   return (
     <>
       <div className="cursor-pointer" onClick={logout}>

@@ -90,6 +90,16 @@ export class OauthProvider extends AuthProviderAbstract {
     }
 
     const { email, sub: id } = await response.json();
+    // Users are looked up by providerId; an undefined id would drop that
+    // filter and match an arbitrary GENERIC user.
+    if (
+      typeof id !== 'string' ||
+      !id.trim() ||
+      typeof email !== 'string' ||
+      !email.trim()
+    ) {
+      throw new Error('User info response lacks sub or email');
+    }
     return { email, id };
   }
 }

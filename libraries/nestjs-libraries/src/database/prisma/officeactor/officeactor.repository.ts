@@ -34,6 +34,37 @@ export class OfficeActorRepository {
     });
   }
 
+  getUserStatusBySub(sub: string) {
+    return this._user.model.user.findFirst({
+      where: {
+        providerName: Provider.GENERIC,
+        providerId: sub,
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      select: {
+        id: true,
+        activated: true,
+      },
+    });
+  }
+
+  // The organizations AuthMiddleware lets the user work in: enabled
+  // memberships of organizations that are not deleted.
+  countActiveMemberships(userId: string) {
+    return this._userOrg.model.userOrganization.count({
+      where: {
+        userId,
+        disabled: false,
+        organization: {
+          deletedAt: null,
+        },
+      },
+    });
+  }
+
   // Includes deleted rows: the unique (email, providerName) index does too.
   getOtherUserWithEmail(email: string, exceptUserId?: string) {
     return this._user.model.user.findFirst({
