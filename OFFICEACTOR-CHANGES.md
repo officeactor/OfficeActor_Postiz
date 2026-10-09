@@ -25,9 +25,10 @@ files.
 
 | File | Purpose |
 | --- | --- |
-| `apps/backend/src/officeactor/officeactor.module.ts` | Registers the bridge controller, guard, service and repository; mounts no controller in `MCP_ONLY` mode, like `ApiModule`. |
+| `apps/backend/src/officeactor/officeactor.module.ts` | Registers the bridge controller, guard, service and repository and the open controller; mounts no controller in `MCP_ONLY` mode, like `ApiModule`. |
 | `apps/backend/src/officeactor/officeactor.guard.ts` | Requires `Authorization: Bearer <OFFICEACTOR_BRIDGE_SECRET>`; answers 404 when the secret is missing or shorter than 32 characters. |
 | `apps/backend/src/officeactor/officeactor.controller.ts` | Bridge routes under `/officeactor` (see below). Excluded from Swagger. |
+| `apps/backend/src/officeactor/officeactor.open.controller.ts` | Public `GET /oa-open/:id` for OfficeActor's "Social Media" button (see below). Excluded from Swagger. |
 | `libraries/nestjs-libraries/src/database/prisma/officeactor/officeactor.service.ts` | Validates ids, upserts users, organizations and memberships, deactivates users, keeps OfficeActor admins in every organization. |
 | `libraries/nestjs-libraries/src/database/prisma/officeactor/officeactor.repository.ts` | Prisma queries for the service, selecting only the fields it needs. |
 | `libraries/nestjs-libraries/src/dtos/officeactor/officeactor.dto.ts` | Request validation and the shared `sub` pattern. |
@@ -73,6 +74,23 @@ Every call can be repeated, also concurrently: identical calls racing each
 other all succeed and create one row. Invalid `sub`, organization id, email,
 name or role → 400; missing or wrong secret → 401. OfficeActor should still send
 the calls for one `sub` one after another: `providerId` has no unique index.
+
+## Opening an organization from OfficeActor
+
+OfficeActor's "Social Media" button links to `<Postiz URL>/api/oa-open/<organization id>`.
+
+- **Behaviour:** for a valid UUID, the route sets the `showorg` cookie with
+  exactly the options of `/user/change-org` (domain from `FRONTEND_URL`,
+  `secure`, `httpOnly` and `sameSite: none` unless `NOT_SECURED`, one year)
+  and redirects to `${FRONTEND_URL}/`. An invalid id only redirects.
+- **Signed out:** the cookie survives the sign-in through OfficeActor, because
+  login sets only `auth`, so the user lands in the chosen organization.
+- **Why public:** like `/user/change-org` it only stores a preference.
+  `AuthMiddleware` ignores an id that is not one of the user's organizations and
+  falls back to the first one. It needs neither the bridge secret nor a session.
+- **Prefix:** `oa-open` deliberately does not start with `officeactor`, so a
+  later restriction of `/api/officeactor` to OfficeActor's servers leaves the
+  button working.
 
 ## Sign-in through OfficeActor
 
