@@ -33,6 +33,8 @@ files.
 | `libraries/nestjs-libraries/src/database/prisma/officeactor/officeactor.repository.ts` | Prisma queries for the service, selecting only the fields it needs. |
 | `libraries/nestjs-libraries/src/dtos/officeactor/officeactor.dto.ts` | Request validation and the shared `sub` pattern. |
 | `apps/frontend/src/components/auth/oauth.auto.login.tsx` | Starts the generic OAuth sign-in on page load; after two redirects within 60 seconds it shows the sign-in button and a link to the password login instead. |
+| `.github/workflows/officeactor-image.yml` | Builds and pushes the image OfficeActor deploys on Render (see below). |
+| `var/docker/officeactor-start.sh` | Start command on Render and in OfficeActor's local stack (see below). |
 | `OFFICEACTOR-CHANGES.md` | This file. |
 
 ## OfficeActor bridge
@@ -110,3 +112,24 @@ signs users without an organization out again.
   `POSTIZ_OAUTH_CLIENT_SECRET` and `NEXT_PUBLIC_POSTIZ_OAUTH_DISPLAY_NAME`
   configure the provider itself. Leave `POSTIZ_GENERIC_OAUTH` unset to turn it
   off: any non-empty value, even `false`, turns it on.
+
+## Deployment on Render
+
+OfficeActor runs this fork on Render from an image built here. The Render setup
+itself (Blueprint, environment) lives in OfficeActor's repository.
+
+- **Image:** `.github/workflows/officeactor-image.yml` builds `Dockerfile.dev` for
+  `linux/amd64` on every push to `main` and pushes
+  `ghcr.io/officeactor/officeactor_postiz` with the tags `main` and the commit
+  SHA. It passes no build argument, like OfficeActor's local build, so
+  `NEXT_PUBLIC_VERSION` stays empty. The job only runs in
+  `officeactor/OfficeActor_Postiz`. Render does not redeploy when the tag moves;
+  a deploy is started by hand.
+- **Start command:** `sh /app/var/docker/officeactor-start.sh` replaces the
+  image's `CMD` and then runs the same nginx and pm2 start.
+  - It unsets `PORT`. Render sets it to the port it sends public traffic to,
+    which is nginx (5000), but `apps/backend/src/main.ts` reads `PORT` too and
+    has to stay on 3000, where nginx expects the backend.
+  - It sets `TEMPORAL_ADDRESS` to `$TEMPORAL_HOST:7233` when only
+    `TEMPORAL_HOST` is given, because Render passes another service's host
+    name without a port.
