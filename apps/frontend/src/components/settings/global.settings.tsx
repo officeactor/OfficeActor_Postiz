@@ -20,11 +20,10 @@ export const GlobalSettings = () => {
   return (
     <div className="flex flex-col">
       <h3 className="text-[20px]">{t('global_settings', 'Global Settings')}</h3>
-      <AuthenticationComponent />
+      {/* OfficeActor: sign-in method and account deletion belong to OfficeActor */}
       <MetricComponent />
       <EmailNotificationsComponent />
       <ShortlinkPreferenceComponent />
-      <DeleteAccountComponent />
     </div>
   );
 };

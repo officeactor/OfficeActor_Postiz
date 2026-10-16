@@ -28,7 +28,7 @@ export const LogoutComponent: FC<{ isIcon?: boolean }> = ({ isIcon }) => {
           method: 'POST',
         });
       }
-      // POSTIZ_LOGOUT_URL ends the identity provider's session as well, so
+      // OfficeActor: POSTIZ_LOGOUT_URL ends the identity provider's session as well, so
       // automatic sign-in does not log the user straight back in.
       window.location.href = logoutUrl || '/';
     }

@@ -26,7 +26,7 @@ import { OfficeActorModule } from '@gitroom/backend/officeactor/officeactor.modu
     DatabaseModule,
     ApiModule,
     PublicApiModule,
-    OfficeActorModule,
+    OfficeActorModule, // OfficeActor: bridge, "Social Media" button, blocked routes
     AgentModule,
     ThirdPartyModule,
     VideoModule,

@@ -90,7 +90,7 @@ export class OauthProvider extends AuthProviderAbstract {
     }
 
     const { email, sub: id } = await response.json();
-    // Users are looked up by providerId; an undefined id would drop that
+    // OfficeActor: users are looked up by providerId; an undefined id would drop that
     // filter and match an arbitrary GENERIC user.
     if (
       typeof id !== 'string' ||

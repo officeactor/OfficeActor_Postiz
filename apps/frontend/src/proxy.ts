@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { getCookieUrlFromDomain } from '@gitroom/helpers/subdomain/subdomain.management';
 import { internalFetch } from '@gitroom/helpers/utils/internal.fetch';
 import acceptLanguage from 'accept-language';
+import { officeActorSignIn } from '@gitroom/frontend/officeactor/officeactor.proxy';
 import {
   cookieName,
   headerName,
@@ -80,6 +81,12 @@ export async function proxy(request: NextRequest) {
       domain: getCookieUrlFromDomain(process.env.FRONTEND_URL!),
     });
     return response;
+  }
+
+  // OfficeActor: signed out, go through OfficeActor without a Postiz page
+  const officeActor = await officeActorSignIn(request, !!authCookie);
+  if (officeActor) {
+    return officeActor;
   }
 
   if (

@@ -118,6 +118,8 @@ export const TeamsComponent = () => {
   const user = useUser();
   const modals = useModals();
   const t = useT();
+  // OfficeActor: members come from OfficeActor projects; the list is read-only
+  const canManageMembers = false;
   const myLevel = user?.role === 'USER' ? 0 : user?.role === 'ADMIN' ? 1 : 2;
   const getLevel = useCallback(
     (role: 'USER' | 'ADMIN' | 'SUPERADMIN') =>
@@ -174,12 +176,14 @@ export const TeamsComponent = () => {
   return (
     <div className="flex flex-col">
       <h3 className="text-[20px]">{t('team_members', 'Team Members')}</h3>
+      {canManageMembers && (
       <div className="text-customColor18 mt-[4px]">
         {t(
           'invite_your_assistant_or_team_member_to_manage_your_account',
           'Invite your assistant or team member to manage your account'
         )}
       </div>
+      )}
       <div className="my-[16px] mt-[16px] bg-sixth border-fifth border rounded-[4px] p-[24px] flex flex-col gap-[24px]">
         <div className="flex flex-col gap-[16px]">
           {(data || []).map((p) => (
@@ -194,7 +198,7 @@ export const TeamsComponent = () => {
                   ? t('admin', 'Admin')
                   : t('super_admin', 'Super Admin')}
               </div>
-              {+myLevel > +getLevel(p.role) ? (
+              {canManageMembers && +myLevel > +getLevel(p.role) ? (
                 <div className="flex-1 flex justify-end">
                   <Button
                     className={`!bg-customColor3 !h-[24px] border border-customColor21 rounded-[4px] text-[12px]`}
@@ -226,11 +230,13 @@ export const TeamsComponent = () => {
             </div>
           ))}
         </div>
+        {canManageMembers && (
         <div>
           <Button onClick={addMember}>
             {t('add_another_member', 'Add another member')}
           </Button>
         </div>
+        )}
       </div>
     </div>
   );

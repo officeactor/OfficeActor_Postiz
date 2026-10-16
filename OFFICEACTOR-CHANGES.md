@@ -7,7 +7,11 @@ can be merged with little effort. Keep it current with every change.
 
 Rules: configure through environment variables before changing code, add new
 files instead of rewriting existing ones, and hide features instead of deleting
-files.
+files. Logic goes into new files under `officeactor/`; a changed line in an
+upstream file carries the comment `OfficeActor:`, so
+`grep -rn "OfficeActor:" apps libraries` lists the spots after an update.
+
+Based on the upstream release v2.25.1 (merged on 2026-10-16).
 
 ## Changed upstream files
 
@@ -15,24 +19,27 @@ files.
 | --- | --- | --- |
 | `apps/backend/src/app.module.ts` | Imports `OfficeActorModule` (one import line, one entry in `imports`). | Mounts the OfficeActor bridge without touching `ApiModule`'s controller lists or its `AuthMiddleware`. |
 | `apps/backend/src/services/auth/providers/oauth.provider.ts` | `getUser` rejects a userinfo response without a non-empty `sub` and `email`. | Users are looked up by `providerId`; an undefined `sub` drops that filter and would sign in an arbitrary `GENERIC` user. |
-| `apps/frontend/src/app/(app)/auth/login/page.tsx` | Renders `OauthAutoLogin` when `POSTIZ_OAUTH_AUTO_LOGIN` is `true`, unless `?manual=1`. | Sign-in goes through OfficeActor without an extra click. |
-| `apps/frontend/src/app/(app)/auth/page.tsx` | Same as the login page, except for the OAuth callback (`provider` or `code` in the URL). | Signed-out visitors land on `/auth`, not `/auth/login`. |
+| `apps/frontend/src/proxy.ts` | Calls `officeActorSignIn` after the `/auth/logout` handling (one import, four lines). | Sign-in through OfficeActor as plain server redirects, without a Postiz page in between (see below). |
 | `libraries/react-shared-libraries/src/helpers/variable.context.tsx` | Optional `logoutUrl` variable. | Passes `POSTIZ_LOGOUT_URL` to the logout button. |
 | `apps/frontend/src/app/(app)/layout.tsx` | Passes `POSTIZ_LOGOUT_URL` as `logoutUrl`. | As above. |
 | `apps/frontend/src/components/layout/logout.component.tsx` | After logging out, goes to `logoutUrl` when set, otherwise `/` as before. | Logging out of Postiz also ends the OfficeActor session; otherwise automatic sign-in would log the user straight back in. |
+| `apps/frontend/src/components/new-layout/layout.component.tsx` | Renders neither the impersonation bar (nor its top padding of the left menu) nor the posting streak with its separator. | OfficeActor's customers and admins do not act as other users; the streak is not part of the offer. |
+| `apps/frontend/src/components/settings/global.settings.tsx` | Leaves out the sign-in method and "Delete Account". | Sign-in and accounts belong to OfficeActor; deleting would detach the user from its OfficeActor identity. |
+| `apps/frontend/src/components/settings/teams.component.tsx` | `canManageMembers = false` hides the invitation text, "Add another member" and "Remove"; the member list stays. | Members come from OfficeActor's projects. |
 
 ## Added files
 
 | File | Purpose |
 | --- | --- |
-| `apps/backend/src/officeactor/officeactor.module.ts` | Registers the bridge controller, guard, service and repository and the open controller; mounts no controller in `MCP_ONLY` mode, like `ApiModule`. |
+| `apps/backend/src/officeactor/officeactor.module.ts` | Registers the bridge controller, guard, service and repository and the open controller, and applies `OfficeActorBlockedMiddleware`; mounts nothing in `MCP_ONLY` mode, like `ApiModule`. |
+| `apps/backend/src/officeactor/officeactor.blocked.middleware.ts` | Refuses upstream routes for actions OfficeActor manages with 403 (see below), without changing their controllers. |
+| `apps/frontend/src/officeactor/officeactor.proxy.ts` | Sign-in through OfficeActor on the server: redirect to OfficeActor, redeem the returned code, loop guard (see below). |
 | `apps/backend/src/officeactor/officeactor.guard.ts` | Requires `Authorization: Bearer <OFFICEACTOR_BRIDGE_SECRET>`; answers 404 when the secret is missing or shorter than 32 characters. |
 | `apps/backend/src/officeactor/officeactor.controller.ts` | Bridge routes under `/officeactor` (see below). Excluded from Swagger. |
 | `apps/backend/src/officeactor/officeactor.open.controller.ts` | Public `GET /oa-open/:id` for OfficeActor's "Social Media" button (see below). Excluded from Swagger. |
 | `libraries/nestjs-libraries/src/database/prisma/officeactor/officeactor.service.ts` | Validates ids, upserts users, organizations and memberships, deactivates users, keeps OfficeActor admins in every organization. |
 | `libraries/nestjs-libraries/src/database/prisma/officeactor/officeactor.repository.ts` | Prisma queries for the service, selecting only the fields it needs. |
 | `libraries/nestjs-libraries/src/dtos/officeactor/officeactor.dto.ts` | Request validation and the shared `sub` pattern. |
-| `apps/frontend/src/components/auth/oauth.auto.login.tsx` | Starts the generic OAuth sign-in on page load; after two redirects within 60 seconds it shows the sign-in button and a link to the password login instead. |
 | `.github/workflows/officeactor-image.yml` | Builds and pushes the image OfficeActor deploys on Render (see below). |
 | `var/docker/officeactor-start.sh` | Start command on Render and in OfficeActor's local stack (see below). |
 | `OFFICEACTOR-CHANGES.md` | This file. |
@@ -101,9 +108,25 @@ bridge created that are activated and belong to at least one organization,
 because Postiz registers unknown users with an organization of their own and
 signs users without an organization out again.
 
-- **`POSTIZ_OAUTH_AUTO_LOGIN=true`:** `/auth` and `/auth/login` start the OAuth
-  sign-in at once. `/auth/login?manual=1` shows the normal login form, for
-  example for a password account in an emergency.
+- **`POSTIZ_OAUTH_AUTO_LOGIN=true`:** `officeactor.proxy.ts` handles every page
+  request without a session, the `/auth` pages included, so no Postiz sign-in
+  page renders:
+  - It asks the backend for the login link (`GET /auth/oauth/GENERIC`, which
+    sets `oauth_state`) and redirects there, remembering the requested path for
+    ten minutes (`oa_return`, relative paths only).
+  - OfficeActor returns to `/settings?code=…&state=…`; the proxy posts code and
+    state with the visitor's cookies to `POST /auth/oauth/GENERIC/exists` and
+    passes its `auth` cookie on in a redirect to the remembered path or `/`.
+    The backend's Set-Cookie headers are appended after every
+    `response.cookies` change, which would otherwise drop them.
+  - Unknown users (`token` instead of `login`) and failures go to
+    `POSTIZ_OAUTH_AUTH_URL?fehler=anmeldung`. A counter cookie (`oa_sign_in`,
+    60 seconds) sends the fourth sign-in within a minute to `?fehler=schleife`,
+    for example when Postiz signs a user without an organization out again.
+  - The backend also refuses Postiz's own `POST /auth/login`, `/auth/register`,
+    `/auth/forgot`, `/auth/forgot-return`, `/auth/activate` and
+    `/auth/resend-activation`. To use Postiz without OfficeActor, unset the
+    variable.
 - **`POSTIZ_LOGOUT_URL`:** where the browser goes after logging out of Postiz.
   OfficeActor's `/abmelden` ends its own session there. Unset, Postiz goes to `/`
   as before.
@@ -112,6 +135,21 @@ signs users without an organization out again.
   `POSTIZ_OAUTH_CLIENT_SECRET` and `NEXT_PUBLIC_POSTIZ_OAUTH_DISPLAY_NAME`
   configure the provider itself. Leave `POSTIZ_GENERIC_OAUTH` unset to turn it
   off: any non-empty value, even `false`, turns it on.
+
+## Features OfficeActor manages
+
+`OfficeActorBlockedMiddleware` answers 403 (`Das wird über OfficeActor
+verwaltet.`) for these routes, whatever the user's role; the UI hides them:
+
+- team: `POST /settings/team` (invite), `POST /settings/team/add` (super admins
+  add by email), `DELETE /settings/team/:id`, `POST /user/join-org`
+- impersonation: `GET` and `POST /user/impersonate`
+- `POST /user/delete-account`
+- with `POSTIZ_OAUTH_AUTO_LOGIN=true`: Postiz's own sign-in routes (above)
+
+Routes that `ApiModule`'s `AuthMiddleware` covers still answer 401 without a
+session. Not changed, because already off without billing or a Sentry DSN: the
+Chrome extension link and the feedback button.
 
 ## Deployment on Render
 
