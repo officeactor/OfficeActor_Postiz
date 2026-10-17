@@ -1,0 +1,357 @@
+// OfficeActor branding: OfficeActor's colors on top of Postiz's own theme.
+//
+// Upstream files keep their colors; this file redirects them, so upstream
+// releases merge without conflicts. global.scss loads it right after
+// colors.scss. Every rule is more specific than the one it replaces
+// (`html:root …` instead of `:root …`), so the order in the bundle does not
+// matter. OfficeActor's repository checks with scripts/tests/postizBranding.test.js
+// that every purple Tailwind class and color literal Postiz uses is covered
+// here; after an upstream merge it names the ones to add.
+//
+// Pink #e91e63 is OfficeActor's brand color (buttons, active items, the logo),
+// Meerblau #005aff its second accent (what Postiz shows in magenta: secondary
+// buttons, selected options, highlights). Neutrals follow OfficeActor's dark
+// website (FE/src/styles/app.css).
+
+html:root {
+  --oa-pink: #e91e63;
+  --oa-pink-hover: #c2185b;
+  --oa-pink-rgb: 233 30 99;
+  --oa-blue: #005aff;
+  --oa-blue-hover: #0048cc;
+}
+
+// Variables of colors.scss -----------------------------------------------
+
+html:root .dark {
+  --oa-pink-soft: #f06292;
+  --oa-blue-text: #4d8dff;
+
+  --new-back-drop: #000000;
+  --new-settings: #1a1a1a;
+  --new-border: #262626;
+  --new-bgColor: #000000;
+  --new-bgColorInner: #111111;
+  --new-sep: #3a3a3a;
+  --new-bgLineColor: #1f1f1f;
+  --new-textItemFocused: #ffffff;
+  --new-textItemBlur: #a3a3a3;
+  --new-boxFocused: var(--oa-pink);
+  --new-blockSeparator: #262626;
+  --new-btn-simple: #262626;
+  --new-btn-primary: var(--oa-pink);
+  --new-ai-btn: var(--oa-blue);
+  --new-box-hover: #1a1a1a;
+  --new-table-border: #262626;
+  --new-table-header: #1a1a1a;
+  --new-table-text: #a3a3a3;
+  --new-table-text-focused: var(--oa-blue-text);
+  --new-small-strips: #141414;
+  --new-big-strips: #0d0d0d;
+  --new-col-color: #262626;
+  --new-menu-dots: #6b6b6b;
+
+  --color-primary: #000000;
+  --color-secondary: #0a0a0a;
+  --color-third: #0a0a0a;
+  --color-forth: var(--oa-pink);
+  --color-seventh: var(--oa-pink);
+  --color-input-text: #6b6b6b;
+  --color-custom1: #3a3a3a;
+  --color-custom2: #141414;
+  --color-custom3: #0a0a0a;
+  --color-custom4: var(--oa-pink);
+  --color-custom5: #ececec;
+  --color-custom7: var(--oa-pink);
+  --color-custom9: #3d3d3d;
+  --color-custom11: var(--oa-pink-soft);
+  --color-custom12: #f8bbd0;
+  --color-custom14: #6b6b6b;
+  --color-custom16: #141414;
+  --color-custom20: #141414;
+  --color-custom21: #6b6b6b;
+  --color-custom28: var(--oa-pink-soft);
+  --color-custom29: #3d0f20;
+  --color-custom30: var(--oa-pink-hover);
+  --color-custom31: #111111;
+  --color-custom34: #3a3a3a;
+  --color-custom41: #f8bbd0;
+  --color-custom43: #4a4a4a;
+  --color-custom44: #2e2e2e;
+  --color-custom45: var(--oa-pink);
+  --color-custom46: #8a8a8a;
+  --color-custom47: #1a1a1a;
+  --color-custom48: #0a0a0a;
+  --color-custom49: #0a0a0a;
+  --color-custom50: #3d0f20;
+  --color-custom51: var(--oa-pink);
+  --color-custom55: #1f1f1f;
+}
+
+html:root .light {
+  --oa-pink-soft: #c2185b;
+  --oa-blue-text: #005aff;
+
+  --new-back-drop: #000000;
+  --new-settings: #ededed;
+  --new-sep: #d6d6d6;
+  --new-border: #e8e8e8;
+  --new-bgColor: #f2f2f2;
+  --new-bgColorInner: #ffffff;
+  --new-bgLineColor: #e6e6e6;
+  --new-textItemFocused: #ffffff;
+  --new-textItemBlur: #6b6b6b;
+  --new-boxFocused: var(--oa-pink);
+  --new-blockSeparator: #ededed;
+  --new-btn-simple: #ededed;
+  --new-btn-primary: var(--oa-pink);
+  --new-ai-btn: var(--oa-blue);
+  --new-box-hover: #f5f5f5;
+  --new-table-border: #e6e6e6;
+  --new-table-header: #f5f5f5;
+  --new-table-text: #6b6b6b;
+  --new-table-text-focused: var(--oa-blue-text);
+  --new-big-strips: #f5f5f5;
+  --new-col-color: #f0f0f0;
+  --menu-shadow: -22px 83px 24px 0 rgba(0, 0, 0, 0),
+    -14px 53px 22px 0 rgba(0, 0, 0, 0.01), -8px 30px 19px 0 rgba(0, 0, 0, 0.05),
+    -3px 13px 14px 0 rgba(0, 0, 0, 0.09), -1px 3px 8px 0 rgba(0, 0, 0, 0.1);
+  --popup-color: rgba(0, 0, 0, 0.2);
+  --border-preview: #ededed;
+  --preview-box-shadow: 0 386px 108px 0 rgba(0, 0, 0, 0),
+    0 247px 99px 0 rgba(0, 0, 0, 0.01), 0 139px 83px 0 rgba(0, 0, 0, 0.03),
+    0 62px 62px 0 rgba(0, 0, 0, 0.04), 0 15px 34px 0 rgba(0, 0, 0, 0.05);
+
+  --color-primary: #f2f2f2;
+  --color-forth: var(--oa-pink);
+  --color-seventh: var(--oa-pink);
+  --color-input-text: #6b6b6b;
+  --color-custom1: #3a3a3a;
+  --color-custom4: var(--oa-pink);
+  --color-custom5: #ececec;
+  --color-custom7: var(--oa-pink);
+  --color-custom9: #3d3d3d;
+  --color-custom11: var(--oa-pink-soft);
+  --color-custom12: #f8bbd0;
+  --color-custom14: #6b6b6b;
+  --color-custom16: #141414;
+  --color-custom21: #6b6b6b;
+  --color-custom28: var(--oa-pink-soft);
+  --color-custom29: #3d0f20;
+  --color-custom34: #3a3a3a;
+  --color-custom41: #f8bbd0;
+  --color-custom43: #4a4a4a;
+  --color-custom44: #2e2e2e;
+  --color-custom45: var(--oa-pink);
+  --color-custom46: #8a8a8a;
+  --color-custom47: #1a1a1a;
+  --color-custom49: #0a0a0a;
+  --color-custom50: #3d0f20;
+  --color-custom51: var(--oa-pink);
+  --color-custom55: #dedede;
+}
+
+// Hardcoded Tailwind classes ------------------------------------------------
+// One selector per class Postiz uses; the escaped name is the class itself.
+
+// Postiz purple → pink
+html:root
+  :is(
+    .bg-\[\#612BD3\],
+    .bg-\[\#612bd3\],
+    .bg-\[\#9333ea\],
+    .bg-\[\#AA0FA4\]
+  ) {
+  background-color: var(--oa-pink);
+}
+html:root
+  :is(
+    .hover\:bg-\[\#612BD3\],
+    .hover\:bg-\[\#5520CB\],
+    .hover\:bg-\[\#5023b8\],
+    .hover\:bg-\[\#7640e0\],
+    .hover\:bg-\[\#7B3FF2\]
+  ):hover {
+  background-color: var(--oa-pink-hover);
+}
+html:root .hover\:bg-\[\#612BD3\]\/80:hover {
+  background-color: rgb(var(--oa-pink-rgb) / 0.8);
+}
+html:root .bg-\[\#612bd3\]\/10,
+html:root .bg-\[\#AA0FA4\]\/10 {
+  background-color: rgb(var(--oa-pink-rgb) / 0.1);
+}
+html:root :is(.border-\[\#612BD3\], .border-\[\#622FF6\]),
+html:root .focus\:border-\[\#612BD3\]:focus {
+  border-color: var(--oa-pink);
+}
+html:root .hover\:border-\[\#612BD3\]\/40:hover {
+  border-color: rgb(var(--oa-pink-rgb) / 0.4);
+}
+html:root .hover\:border-\[\#612bd3\]\/50:hover {
+  border-color: rgb(var(--oa-pink-rgb) / 0.5);
+}
+html:root .border-\[\#AA0FA4\]\/30 {
+  border-color: rgb(var(--oa-pink-rgb) / 0.3);
+}
+html:root :is(.text-\[\#612BD3\], .text-\[\#612bd3\]) {
+  color: var(--oa-pink);
+}
+html:root
+  :is(
+    .text-\[\#B69DEC\],
+    .text-\[\#a78bfa\],
+    .text-\[\#8b5cf6\]
+  ),
+html:root .hover\:text-\[\#c4b5fd\]:hover {
+  color: var(--oa-pink-soft);
+}
+html:root .scrollbar-thumb-\[\#612AD5\] {
+  --scrollbar-thumb: var(--oa-pink) !important;
+}
+
+// Purple gradients (onboarding) → pink
+html:root .from-\[\#622aff\] {
+  --tw-gradient-from: var(--oa-pink) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(var(--oa-pink-rgb) / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+html:root .to-\[\#8b5cf6\] {
+  --tw-gradient-to: var(--oa-pink-soft) var(--tw-gradient-to-position);
+}
+html:root .hover\:from-\[\#7c3aff\]:hover {
+  --tw-gradient-from: var(--oa-pink-hover) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(var(--oa-pink-rgb) / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+html:root .hover\:to-\[\#9d6eff\]:hover {
+  --tw-gradient-to: var(--oa-pink) var(--tw-gradient-to-position);
+}
+
+// Postiz magenta and its secondary buttons → Meerblau
+html:root :is(.bg-\[\#FC69FF\], .bg-\[\#D82D7E\]) {
+  background-color: var(--oa-blue);
+}
+html:root .border-\[\#FC69FF\] {
+  border-color: var(--oa-blue);
+}
+html:root .text-\[\#FC69FF\] {
+  color: var(--oa-blue-text);
+}
+html:root .\!text-\[\#FC69FF\] {
+  color: var(--oa-blue-text) !important;
+}
+
+// Tailwind's purple palette → pink
+html:root .bg-purple-700 {
+  background-color: var(--oa-pink-hover);
+}
+html:root .shadow-purple-500\/25 {
+  --tw-shadow-color: rgb(var(--oa-pink-rgb) / 0.25);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+html:root .hover\:shadow-purple-500\/40:hover {
+  --tw-shadow-color: rgb(var(--oa-pink-rgb) / 0.4);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+// SVG attributes and inline styles ------------------------------------------
+// CSS beats SVG presentation attributes; inline styles need !important.
+
+html:root
+  :is(
+    [fill='#612BD3' i],
+    [fill='#FF3EA2' i]
+  ) {
+  fill: var(--oa-pink);
+}
+html:root [stroke='#612BD3' i] {
+  stroke: var(--oa-pink);
+}
+html:root [stroke='#FC69FF' i] {
+  stroke: var(--oa-blue);
+}
+html:root [fill='#E9E9F1' i] {
+  fill: #ececec;
+}
+// Light-mode empty states of the calendar and the media library (icons/index.tsx)
+html:root [fill='#E7DDFE' i] {
+  fill: #fce4ec;
+}
+html:root [fill='#DACBFB' i] {
+  fill: #f8bbd0;
+}
+html:root [stroke='#DACBFB' i] {
+  stroke: #f8bbd0;
+}
+// Gradients of the sidebar's channel strip and the agent icon
+html:root
+  :is(
+    [stop-color='#662FDA' i],
+    [stop-color='#6112ff' i],
+    [stop-color='#4500e7' i]
+  ) {
+  stop-color: var(--oa-pink);
+}
+html:root :is([stop-color='#5720CB' i], [stop-color='#2a008d' i]) {
+  stop-color: var(--oa-pink-hover);
+}
+html:root :is([stop-color='#8C66FF' i], [stop-color='#9162ff' i]) {
+  stop-color: #f06292;
+}
+// Inline styles: React writes `fill:#612BD3` on the server, the browser
+// keeps `fill: rgb(97, 43, 211)` for styles set on the client.
+// Settings icon (icons/index.tsx)
+html:root [style*='fill:#612BD3' i],
+html:root [style*='fill: rgb(97, 43, 211)'] {
+  fill: var(--oa-pink) !important;
+}
+// Spinners (loading.tsx; check.payment.tsx passes #612AD5)
+html:root [style*='border-top-color:#612bd3' i],
+html:root [style*='border-top-color: rgb(97, 43, 211)'],
+html:root [style*='border-top-color:#612AD5' i],
+html:root [style*='border-top-color: rgb(97, 42, 213)'] {
+  border-top-color: var(--oa-pink) !important;
+}
+// Video frame slider (media.settings.component.tsx): its inline gradient
+// tracks the position, so it is turned from indigo to pink instead
+html:root input.slider[style*='#4f46e5' i],
+html:root input.slider[style*='rgb(79, 70, 229)'] {
+  filter: hue-rotate(97deg);
+}
+// Mentions in the post previews (inline HTML)
+html:root [style*='color: #ae8afc' i] {
+  color: var(--oa-pink-soft) !important;
+}
+
+// Rules of global.scss --------------------------------------------------------
+
+html:root .ProseMirror .mention,
+html:root .tiptap .mention {
+  color: var(--oa-pink-soft);
+}
+html:root .blackGradBottomBg,
+html:root .blackGradTopBg {
+  background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 100%);
+}
+html:root .preview-comment-cursor {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2228%22 height%3D%2228%22 viewBox%3D%220 0 28 28%22%3E%3Cg fill%3D%22none%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpath d%3D%22M3 4h6M3 24h6M6 4v20%22 stroke%3D%22%23fff%22 stroke-width%3D%224%22%2F%3E%3Cpath d%3D%22M3 4h6M3 24h6M6 4v20%22 stroke%3D%22%23000%22 stroke-width%3D%221.6%22%2F%3E%3Cpath d%3D%22M14 4h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-6l-4 3v-3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z%22 fill%3D%22%23e91e63%22 stroke%3D%22%23fff%22 stroke-width%3D%221.5%22%2F%3E%3Cpath d%3D%22M17 8h6M17 11h4%22 stroke%3D%22%23fff%22 stroke-width%3D%221.5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")
+      6 14,
+    text;
+}
+
+// Sidebar ---------------------------------------------------------------------
+// Upstream's menu is 64px wide (80px panel). German labels are wider
+// ("Einstellungen" is 65px plus the item's padding), so the column grew to the
+// right and took the logo and icons off center. The menu is 80px (96px panel),
+// and the column never grows past it, whatever the language.
+
+html:root div:has(> #left-menu) {
+  width: 96px;
+}
+html:root #left-menu {
+  width: 80px;
+}
+html:root #left-menu > div {
+  min-width: 0;
+}

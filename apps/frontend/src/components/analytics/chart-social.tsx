@@ -39,10 +39,11 @@ export const ChartSocial: FC<{
   const chart = useRef<null | DrawChart>(null);
 
   const colorSchemes = {
+    // OfficeActor: OfficeActor's pink; a canvas does not take the CSS theme
     purple: {
-      start: 'rgba(97, 43, 211, 0.8)',
-      end: 'rgba(97, 43, 211, 0.1)',
-      border: 'rgb(97, 43, 211)',
+      start: 'rgba(233, 30, 99, 0.8)',
+      end: 'rgba(233, 30, 99, 0.1)',
+      border: 'rgb(233, 30, 99)',
     },
     green: {
       start: 'rgba(50, 213, 131, 0.8)',

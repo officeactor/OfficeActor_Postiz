@@ -26,6 +26,14 @@ Based on the upstream release v2.25.1 (merged on 2026-10-16).
 | `apps/frontend/src/components/new-layout/layout.component.tsx` | Renders neither the impersonation bar (nor its top padding of the left menu) nor the posting streak with its separator. | OfficeActor's customers and admins do not act as other users; the streak is not part of the offer. |
 | `apps/frontend/src/components/settings/global.settings.tsx` | Leaves out the sign-in method and "Delete Account". | Sign-in and accounts belong to OfficeActor; deleting would detach the user from its OfficeActor identity. |
 | `apps/frontend/src/components/settings/teams.component.tsx` | `canManageMembers = false` hides the invitation text, "Add another member" and "Remove"; the member list stays. | Members come from OfficeActor's projects. |
+| `apps/frontend/src/app/global.scss` | Loads `officeactor.theme.scss` right after `colors.scss` (one `@use` line). | OfficeActor's colors (see Branding below). |
+| `apps/frontend/src/app/(app)/layout.tsx` | Renders `OfficeActorTitle` in `<head>`. | "OfficeActor" instead of "Postiz" in the browser tab. |
+| `apps/frontend/src/components/new-layout/logo.tsx` | `Logo` renders `OfficeActorMark` in the upstream logo's footprint. | OfficeActor's logo in the left menu and on `/oauth/authorize`. |
+| `apps/frontend/src/components/ui/logo-text.component.tsx` | `LogoTextComponent` renders `OfficeActorMark`. | OfficeActor's logo on the sign-in and billing screens. |
+| `apps/frontend/src/app/(app)/(preview)/p/[id]/page.tsx` | `OfficeActorMark` instead of `/postiz.svg` and the Postiz name; the title is "OfficeActor Preview". | OfficeActor's logo on shared post previews, and its name in their link previews, which run no script. |
+| `apps/frontend/src/components/analytics/chart-social.tsx` | The `purple` scheme is OfficeActor's pink. | The chart is drawn on a canvas, which the CSS theme does not reach. |
+| `apps/frontend/public/favicon.ico` | Replaced by OfficeActor's favicon (`FE/public/favicon-v5.ico` in OfficeActor's repository). | Browser tab icon. |
+| `apps/frontend/public/no-channels-colors.svg`, `apps/frontend/public/peoplemarketplace.svg` | Purple replaced by pink tints, pink and Meerblau. | Illustrations shown as `<img>`, which the CSS theme does not reach. |
 
 ## Added files
 
@@ -42,6 +50,9 @@ Based on the upstream release v2.25.1 (merged on 2026-10-16).
 | `libraries/nestjs-libraries/src/dtos/officeactor/officeactor.dto.ts` | Request validation and the shared `sub` pattern. |
 | `.github/workflows/officeactor-image.yml` | Builds and pushes the image OfficeActor deploys on Render (see below). |
 | `var/docker/officeactor-start.sh` | Start command on Render and in OfficeActor's local stack (see below). |
+| `apps/frontend/src/officeactor/officeactor.theme.scss` | OfficeActor's colors over Postiz's theme (see Branding below). |
+| `apps/frontend/src/officeactor/officeactor.logo.tsx` | `OfficeActorMark`, OfficeActor's oA* mark, framed on its letters. |
+| `apps/frontend/src/officeactor/officeactor.title.tsx` | `OfficeActorTitle`, the inline script that renames the browser tab. |
 | `OFFICEACTOR-CHANGES.md` | This file. |
 
 ## OfficeActor bridge
@@ -150,6 +161,45 @@ verwaltet.`) for these routes, whatever the user's role; the UI hides them:
 Routes that `ApiModule`'s `AuthMiddleware` covers still answer 401 without a
 session. Not changed, because already off without billing or a Sentry DSN: the
 Chrome extension link and the feedback button.
+
+## Branding
+
+Postiz looks like OfficeActor: pink `#e91e63` for buttons, active items and the
+logo, Meerblau `#005aff` as the second accent (secondary buttons, selected
+options, highlights, where Postiz uses magenta), and the neutrals of OfficeActor's
+dark website. The light mode keeps Postiz's layout with the same accents.
+
+- **No upstream colors are edited.** `officeactor.theme.scss` overrides the
+  variables of `colors.scss` for `.dark` and `.light`, and redirects every
+  hardcoded purple that Postiz uses: Tailwind classes such as `bg-[#612BD3]` by
+  their escaped class name, SVG attributes and inline styles by attribute
+  selectors. Its selectors start with `html:root`, so they win over Postiz's
+  rules wherever they end up in the bundle.
+- **Logo:** `OfficeActorMark` frames only the letters "oA" and lets the star
+  overflow to the top right, so layouts center the letters. In the left menu
+  they sit in the middle of the menu column and on the middle line of the top
+  bar.
+- **Left menu:** 80px wide instead of 64px (96px panel), so German labels such
+  as "Einstellungen" fit. The theme also keeps the menu column from growing
+  past that width, which moved the logo and icons to the right.
+- **Browser tab:** `OfficeActorTitle`, an inline script in `<head>`, rewrites
+  `document.title` while the page is parsed and after every navigation, so the
+  pages keep their upstream `metadata.title`.
+- **Not changed:** the font, texts that mention Postiz, emails, the chat widgets
+  of the backend's MCP apps, status colors and other brands' colors (Stripe,
+  Farcaster, Facebook's text-post backgrounds).
+
+After merging an upstream release:
+
+1. Resolve conflicts in the changed files above in favor of OfficeActor; for the
+   replaced images keep OfficeActor's version.
+2. In OfficeActor's repository, run `npm run test:dev`.
+   `scripts/tests/postizBranding.test.js` lists purple classes, colors and
+   `colors.scss` variables that the theme does not cover yet, and checks the
+   changed lines above. Add what it names to `officeactor.theme.scss`; a color
+   of another brand goes on the test's own list instead.
+3. Look at the calendar, the post editor and the settings in both modes, with
+   the browser in German.
 
 ## Deployment on Render
 

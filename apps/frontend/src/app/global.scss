@@ -1,4 +1,6 @@
 @use './colors.scss';
+// OfficeActor: OfficeActor's colors on top of colors.scss
+@use '../officeactor/officeactor.theme.scss';
 @use './polonto.css';
 @use '@uppy/core/dist/style.css' as uppyCore;
 @use '@uppy/dashboard/dist/style.css' as uppyDashboard;

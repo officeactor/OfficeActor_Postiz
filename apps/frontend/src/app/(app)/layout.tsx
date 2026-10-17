@@ -24,6 +24,8 @@ import {
 import { HtmlComponent } from '@gitroom/frontend/components/layout/html.component';
 import Script from 'next/script';
 import { ChangeDirClient } from '@gitroom/frontend/components/new-layout/change.dir.client';
+// OfficeActor: "OfficeActor" instead of "Postiz" in the browser tab
+import { OfficeActorTitle } from '@gitroom/frontend/officeactor/officeactor.title';
 
 const jakartaSans = Plus_Jakarta_Sans({
   weight: ['600', '500'],
@@ -41,6 +43,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <html>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* OfficeActor: "OfficeActor" instead of "Postiz" in the browser tab */}
+        <OfficeActorTitle />
         {!!process.env.DATAFAST_WEBSITE_ID && (
           <Script
             data-website-id={process.env.DATAFAST_WEBSITE_ID}
